@@ -12,18 +12,19 @@ hadiths = [
     ]
 
 # this function will retrieve a specific hadith
-@app.route("/get-hadith/<int:number>")
 def get_hadith(number):
-    
-    chosen_hadith = None
-    for i in hadiths:               # iterate through the hadiths list
-        if i['number'] == number:   # if the value after '"number": ' in the list is equal to the parameter of get_hadith(number)
-            chosen_hadith = i       # make that the chosen hadith
+    chosen_hadith = next((i for i in hadiths if i['number'] == number), None)
+    return chosen_hadith
 
-    if chosen_hadith is not None:   # check if there is a hadith chosen, then return it
+# Flask route to use the standalone function
+@app.route("/get-hadith/<int:number>")
+def get_hadith_route(number):
+    chosen_hadith = get_hadith(number)
+    if chosen_hadith is not None:
         return jsonify(chosen_hadith), 200
     else:
-        return jsonify({'error': 'Hadith not found'}), 404 # if the hadith is not found, return an error
+        return jsonify({'error': 'Hadith not found'}), 404
+
 
 @app.route("/")
 def get_all_hadiths():
